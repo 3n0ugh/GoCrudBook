@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/3n0ugh/GoCrudBook/cmd/pkg/models"
 	"github.com/3n0ugh/GoCrudBook/cmd/web/config"
@@ -34,8 +35,25 @@ func BookGetAll(app *config.Application) http.HandlerFunc {
 }
 
 // Get book by id
-func BookGetById(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello, world!"))
+func BookGetById(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(r.URL.Query().Get("id"))
+		if err != nil || id < 1 {
+			app.NotFound(w)
+		}
+
+		book, err := app.Books.GetById(id)
+		if err != nil {
+			if errors.Is(err, models.ErrNoRecord) {
+				app.NotFound(w)
+				return
+			}
+			app.ServerError(w, err)
+			return
+		}
+
+		fmt.Fprintf(w, "%v\n", book)
+	}
 }
 
 // Get book by name
