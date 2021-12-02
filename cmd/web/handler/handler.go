@@ -1,6 +1,13 @@
 package handler
 
-import "net/http"
+import (
+	"errors"
+	"fmt"
+	"net/http"
+
+	"github.com/3n0ugh/GoCrudBook/cmd/pkg/models"
+	"github.com/3n0ugh/GoCrudBook/cmd/web/config"
+)
 
 // home
 func Home(w http.ResponseWriter, r *http.Request) {
@@ -8,8 +15,22 @@ func Home(w http.ResponseWriter, r *http.Request) {
 }
 
 // Get all books
-func BookGetAll(w http.ResponseWriter, r *http.Request) {
+func BookGetAll(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		books, err := app.Books.GetAll()
+		if err != nil {
+			if errors.Is(err, models.ErrNoRecord) {
+				app.NotFound(w)
+				return
+			}
+			app.ServerError(w, err)
+			return
+		}
 
+		for _, b := range books {
+			fmt.Fprintf(w, "%v\n\n", b)
+		}
+	}
 }
 
 // Get book by id

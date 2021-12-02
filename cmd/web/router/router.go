@@ -3,13 +3,14 @@ package router
 import (
 	"net/http"
 
+	"github.com/3n0ugh/GoCrudBook/cmd/web/config"
 	"github.com/3n0ugh/GoCrudBook/cmd/web/handler"
 )
 
-func SetRoutes() *http.ServeMux {
+func SetRoutes(app *config.Application) *http.ServeMux {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", handler.Home)
+	mux.HandleFunc("/book/all", handler.BookGetAll(app))
 
 	return mux
 }

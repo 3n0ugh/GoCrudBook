@@ -2,7 +2,8 @@ package models
 
 import (
 	"errors"
-	"time"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 var ErrNoRecord = errors.New("models: no record found")
@@ -14,6 +15,6 @@ type Book struct {
 	PageCount       int
 	BookCount       int
 	BorrowTimes     int
-	BorrowDate      time.Time
-	LastReceivedDay time.Time
+	BorrowDate      mysql.NullTime
+	LastReceivedDay mysql.NullTime
 }
