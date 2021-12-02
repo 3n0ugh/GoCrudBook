@@ -10,7 +10,14 @@ import (
 
 func main() {
 	port := flag.String("port", ":5000", "Port Address")
+	dsn := flag.String("dsn", "webook:pass1234!@/library", "MySQL database data source name")
 	flag.Parse()
+
+	db, err := database.New(dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 
 	srv := &http.Server{
 		Addr:    *port,
