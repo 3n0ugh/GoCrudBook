@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/3n0ugh/GoCrudBook/cmd/pkg/models/mysql"
+	"github.com/3n0ugh/GoCrudBook/pkg/models/mysql"
 )
 
 type Application struct {

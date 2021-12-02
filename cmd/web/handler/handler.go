@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/3n0ugh/GoCrudBook/cmd/pkg/models"
 	"github.com/3n0ugh/GoCrudBook/cmd/web/config"
+	"github.com/3n0ugh/GoCrudBook/pkg/models"
 )
 
 // home

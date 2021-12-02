@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/3n0ugh/GoCrudBook/cmd/pkg/models"
+	"github.com/3n0ugh/GoCrudBook/pkg/models"
 )
 
 type BookModel struct {

@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/3n0ugh/GoCrudBook/cmd/pkg/models/mysql"
 	"github.com/3n0ugh/GoCrudBook/cmd/web/config"
 	"github.com/3n0ugh/GoCrudBook/cmd/web/database"
 	"github.com/3n0ugh/GoCrudBook/cmd/web/router"
+	"github.com/3n0ugh/GoCrudBook/pkg/models/mysql"
 )
 
 func main() {
