@@ -11,6 +11,7 @@ func SetRoutes(app *config.Application) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/book", handler.BookGetById(app))
+	mux.HandleFunc("/book/name", handler.BookGetByName(app))
 	mux.HandleFunc("/book/all", handler.BookGetAll(app))
 
 	return mux

@@ -57,8 +57,23 @@ func BookGetById(app *config.Application) http.HandlerFunc {
 }
 
 // Get book by name
-func BookGetByName(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello, world!"))
+func BookGetByName(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		name := r.URL.Query().Get("name")
+		rows, err := app.Books.GetByName(name)
+		if err != nil {
+			if errors.Is(err, models.ErrNoRecord) {
+				app.NotFound(w)
+				return
+			}
+			app.ServerError(w, err)
+			return
+		}
+
+		for _, book := range rows {
+			fmt.Fprintf(w, "%v\n\n", book)
+		}
+	}
 }
 
 // Add book

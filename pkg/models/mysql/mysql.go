@@ -60,3 +60,34 @@ func (b *BookModel) GetById(id int) (*models.Book, error) {
 
 	return book, nil
 }
+
+func (b *BookModel) GetByName(name string) ([]*models.Book, error) {
+	stmt := `SELECT * FROM book WHERE book_name LIKE ?`
+
+	rows, err := b.DB.Query(stmt, "%"+name+"%")
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			return nil, models.ErrNoRecord
+		}
+		return nil, err
+	}
+
+	books := []*models.Book{}
+
+	for rows.Next() {
+		book := &models.Book{}
+		err := rows.Scan(
+			&book.ISBN, &book.BookName, &book.Author, &book.PageCount,
+			&book.BookCount, &book.BorrowTimes, &book.BorrowDate, &book.LastReceivedDay)
+		if err != nil {
+			return nil, err
+		}
+		books = append(books, book)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return books, nil
+}
