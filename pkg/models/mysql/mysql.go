@@ -91,3 +91,16 @@ func (b *BookModel) GetByName(name string) ([]*models.Book, error) {
 
 	return books, nil
 }
+
+func (b *BookModel) Add(books *models.Book) error {
+	stmt := `INSERT INTO book VALUES(?, ?, ?, ?, ?, ?, ?, ?)`
+
+	_, err := b.DB.Exec(stmt,
+		books.ISBN, books.BookName, books.BookName, books.PageCount, books.BookCount,
+		books.BorrowTimes, books.BorrowDate, books.LastReceivedDay)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

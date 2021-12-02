@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 
@@ -77,8 +79,30 @@ func BookGetByName(app *config.Application) http.HandlerFunc {
 }
 
 // Add book
-func BookAdd(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello, world!"))
+func BookAdd(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			w.Header().Add("Allow", http.MethodPost)
+			app.ClientError(w, http.StatusMethodNotAllowed)
+			return
+		}
+
+		b, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			app.ClientError(w, http.StatusBadRequest)
+		}
+
+		var book models.Book
+		json.Unmarshal(b, &book)
+
+		err = app.Books.Add(&book)
+		if err != nil {
+			app.ServerError(w, err)
+		}
+
+		http.Redirect(w, r, fmt.Sprintf("/book?id=%d", book.ISBN), http.StatusSeeOther)
+
+	}
 }
 
 // Delete book

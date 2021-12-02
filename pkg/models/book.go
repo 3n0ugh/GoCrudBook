@@ -9,12 +9,12 @@ import (
 var ErrNoRecord = errors.New("models: no record found")
 
 type Book struct {
-	ISBN            int
-	BookName        string
-	Author          string
-	PageCount       int
-	BookCount       int
-	BorrowTimes     int
-	BorrowDate      mysql.NullTime
-	LastReceivedDay mysql.NullTime
+	ISBN            int            `json:"isbn"`
+	BookName        string         `json:"book_name"`
+	Author          string         `json:"author"`
+	PageCount       int            `json:"page_count"`
+	BookCount       int            `json:"book_count"`
+	BorrowTimes     int            `json:"borrow_times"`
+	BorrowDate      mysql.NullTime `json:"borrow_date"`
+	LastReceivedDay mysql.NullTime `json:"last_received_day"`
 }
