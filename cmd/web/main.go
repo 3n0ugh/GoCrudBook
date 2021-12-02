@@ -4,6 +4,8 @@ import (
 	"flag"
 	"log"
 	"net/http"
+
+	"github.com/3n0ugh/GoCrudBook/cmd/web/router"
 )
 
 func main() {
@@ -11,7 +13,8 @@ func main() {
 	flag.Parse()
 
 	srv := &http.Server{
-		Addr: *port,
+		Addr:    *port,
+		Handler: router.SetRoutes(),
 	}
 
 	err := srv.ListenAndServe()
