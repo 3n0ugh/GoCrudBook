@@ -1,24 +1,31 @@
 
-- Database + 
-    - Create db +
-    - Create table int db +
-        - isbn, bookname, author, pagecount, bookcount, borrow_times, barrow_date, remaining_date +
+- [x] Database
+    - [x] Create a database
+    - [x] Create a table into the database
+        - [x] isbn, bookname, author, pagecount, bookcount, borrow_times, barrow_date, remaining_date 
 
-- Server 
-    - DB model + 
-        - mysql func + 
-        - db conn + 
-    - handlers
-        - BookGetALL + 
-        - BookGetById +
-        - BookGetByName + 
-        - BookAdd + 
-        - BookDelete
-        - BookUpdate
-        - BookBorrow
-        - BookReceive
+- [ ] Server 
+    - [x] DB model
+    - [ ] MySQL Functions
+        - [x] GetAll
+        - [x] GetById
+        - [x] GetByName
+        - [x] Add
+        - [x] Delete
+        - [x] Update
+        - [ ] BookBorrow
+        - [ ] BookReceive 
+    - [x] Database connection
+    - [ ] Handler Functions
+        - [x] BookGetALL 
+        - [x] BookGetById 
+        - [x] BookGetByName 
+        - [x] BookAdd 
+        - [x] BookDelete
+        - [x] BookUpdate
+        - [ ] BookBorrow
+        - [ ] BookReceive
 
-    - routers +
-        - mutexes +
-    - cli +
+    - [x] Set Router 
+    - [x] CLI
         
