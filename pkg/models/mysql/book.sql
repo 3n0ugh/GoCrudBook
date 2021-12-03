@@ -5,8 +5,8 @@ CREATE TABLE book (
     page_count INT NOT NULL,
     book_count INT NOT NULL,
     borrow_times INT NOT NULL,
-    barrow_date DATETIME, 
-    last_recieved_day DATETIME 
+    borrow_date DATETIME, 
+    last_received_day DATETIME 
 );
 
 INSERT INTO book VALUES (
