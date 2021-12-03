@@ -115,7 +115,7 @@ func BookAdd(app *config.Application) http.HandlerFunc {
 			return
 		}
 
-		http.Redirect(w, r, fmt.Sprintf("/book?id=%d", book.ISBN), http.StatusSeeOther)
+		http.Redirect(w, r, fmt.Sprintf("/book/id?id=%d", book.ISBN), http.StatusSeeOther)
 	}
 }
 
@@ -171,7 +171,7 @@ func BookUpdate(app *config.Application) http.HandlerFunc {
 			return
 		}
 
-		http.Redirect(w, r, fmt.Sprintf("/book?id=%d", book.ISBN), http.StatusSeeOther)
+		http.Redirect(w, r, fmt.Sprintf("/book/id?id=%d", book.ISBN), http.StatusSeeOther)
 	}
 }
 
