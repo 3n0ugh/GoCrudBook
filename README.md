@@ -4,7 +4,7 @@
 <img src="https://github.com/3n0ugh/GoCrudBook/blob/main/gopher-lib.jpeg" alt="drawing" width="900" height="570" align="center"/>
 </p>
 
-CRUD API example is written in go language using [net/http](https://pkg.go.dev/net/http) 
+CRUD API example is written in Go using [net/http](https://pkg.go.dev/net/http) 
 package and [MySQL](https://www.mysql.com/) database.
 
 ## Requirements
