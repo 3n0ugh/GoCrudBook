@@ -14,8 +14,14 @@ import (
 )
 
 // home
-func Home(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello, world!"))
+func Home(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			app.NotFound(w)
+			return
+		}
+		fmt.Fprint(w, "Home Page")
+	}
 }
 
 // Get all books
