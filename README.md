@@ -61,7 +61,7 @@ GoCrudBook
     ```
  - Run the main.go
     ```bash
-      go run ./cmd/web/main.go
+      go run ./cmd/web/main.go -port 5000 -dsn "root@/library"
     ```
 
 ## Usage Examples
