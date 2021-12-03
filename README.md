@@ -65,19 +65,19 @@ GoCrudBook
     ```
 
 ## Usage Examples
--  Get all book
+-  Get All Book
   ```bash
     curl -X GET localhost:5000/book
   ```
--  Get book by id
+-  Get Book (by id)
   ```bash
     curl -X GET "localhost:5000/book/id?id=1933988673"
   ```
--  Get book by name (enough to contain the word)
+-  Get Book (by name) (enough to contain the word)
   ```bash
     curl -X GET "localhost:5000/book/name?name=android"
   ```
--  Add book
+-  Add Book
   ```bash
     curl -X POST localhost:5000/book/create -d
       '{ "isbn" : 1932394161,
