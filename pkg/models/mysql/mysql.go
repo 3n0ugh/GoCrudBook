@@ -114,3 +114,15 @@ func (b *BookModel) Delete(id int) error {
 	}
 	return nil
 }
+
+func (b *BookModel) Update(book *models.Book) error {
+	stmt := `UPDATE book SET book_name = ?, author = ?, page_count = ?, book_count = ? ,
+	borrow_times = ?, borrow_date = ?, last_received_day = ? WHERE isbn = ?`
+
+	_, err := b.DB.Exec(stmt, book.BookName, book.Author, book.PageCount,
+		book.BookCount, book.BorrowTimes, book.BorrowDate, book.LastReceivedDay, book.ISBN)
+	if err != nil {
+		return err
+	}
+	return nil
+}

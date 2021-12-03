@@ -142,8 +142,31 @@ func BookDelete(app *config.Application) http.HandlerFunc {
 }
 
 // Update book
-func BookUpdate(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello, world!"))
+func BookUpdate(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPut {
+			w.Header().Add("Allow", http.MethodPut)
+			app.ClientError(w, http.StatusMethodNotAllowed)
+			return
+		}
+
+		b, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			app.ClientError(w, http.StatusBadRequest)
+			return
+		}
+
+		var book models.Book
+		json.Unmarshal(b, &book)
+
+		err = app.Books.Update(&book)
+		if err != nil {
+			app.ServerError(w, err)
+			return
+		}
+
+		http.Redirect(w, r, fmt.Sprintf("/book?id=%d", book.ISBN), http.StatusSeeOther)
+	}
 }
 
 // Borrow book
