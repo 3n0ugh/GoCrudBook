@@ -43,6 +43,7 @@ func BookGetById(app *config.Application) http.HandlerFunc {
 		id, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil || id < 1 {
 			app.ClientError(w, http.StatusBadRequest)
+			return
 		}
 
 		book, err := app.Books.GetById(id)
@@ -70,6 +71,11 @@ func BookGetByName(app *config.Application) http.HandlerFunc {
 				return
 			}
 			app.ServerError(w, err)
+			return
+		}
+
+		if len(rows) < 1 {
+			app.NotFound(w)
 			return
 		}
 
