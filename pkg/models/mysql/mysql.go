@@ -51,6 +51,7 @@ func (b *BookModel) GetById(id int) (*models.Book, error) {
 	err := row.Scan(
 		&book.ISBN, &book.BookName, &book.Author, &book.PageCount,
 		&book.BookCount, &book.BorrowTimes, &book.BorrowDate, &book.LastReceivedDay)
+
 	if err != nil {
 		if errors.Is(err, models.ErrNoRecord) {
 			return nil, models.ErrNoRecord
@@ -92,15 +93,24 @@ func (b *BookModel) GetByName(name string) ([]*models.Book, error) {
 	return books, nil
 }
 
-func (b *BookModel) Add(books *models.Book) error {
+func (b *BookModel) Add(book *models.Book) error {
 	stmt := `INSERT INTO book VALUES(?, ?, ?, ?, ?, ?, ?, ?)`
 
 	_, err := b.DB.Exec(stmt,
-		books.ISBN, books.BookName, books.BookName, books.PageCount, books.BookCount,
-		books.BorrowTimes, books.BorrowDate, books.LastReceivedDay)
+		book.ISBN, book.BookName, book.BookName, book.PageCount, book.BookCount,
+		book.BorrowTimes, book.BorrowDate, book.LastReceivedDay)
 	if err != nil {
 		return err
 	}
+	return nil
+}
 
+func (b *BookModel) Delete(id int) error {
+	stmt := `DELETE FROM book WHERE isbn = ?`
+
+	_, err := b.DB.Exec(stmt, id)
+	if err != nil {
+		return err
+	}
 	return nil
 }

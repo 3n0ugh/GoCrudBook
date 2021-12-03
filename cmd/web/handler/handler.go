@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -41,12 +42,12 @@ func BookGetById(app *config.Application) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil || id < 1 {
-			app.NotFound(w)
+			app.ClientError(w, http.StatusBadRequest)
 		}
 
 		book, err := app.Books.GetById(id)
 		if err != nil {
-			if errors.Is(err, models.ErrNoRecord) {
+			if errors.Is(err, sql.ErrNoRows) {
 				app.NotFound(w)
 				return
 			}
@@ -64,7 +65,7 @@ func BookGetByName(app *config.Application) http.HandlerFunc {
 		name := r.URL.Query().Get("name")
 		rows, err := app.Books.GetByName(name)
 		if err != nil {
-			if errors.Is(err, models.ErrNoRecord) {
+			if errors.Is(err, sql.ErrNoRows) {
 				app.NotFound(w)
 				return
 			}
@@ -90,6 +91,7 @@ func BookAdd(app *config.Application) http.HandlerFunc {
 		b, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			app.ClientError(w, http.StatusBadRequest)
+			return
 		}
 
 		var book models.Book
@@ -98,16 +100,39 @@ func BookAdd(app *config.Application) http.HandlerFunc {
 		err = app.Books.Add(&book)
 		if err != nil {
 			app.ServerError(w, err)
+			return
 		}
 
 		http.Redirect(w, r, fmt.Sprintf("/book?id=%d", book.ISBN), http.StatusSeeOther)
-
 	}
 }
 
 // Delete book
-func BookDelete(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello, world!"))
+func BookDelete(app *config.Application) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodDelete {
+			w.Header().Add("Allow", http.MethodDelete)
+			app.ClientError(w, http.StatusMethodNotAllowed)
+			return
+		}
+
+		id, err := strconv.Atoi(r.URL.Query().Get("id"))
+		if err != nil || id < 1 {
+			app.ClientError(w, http.StatusBadRequest)
+			return
+		}
+
+		err = app.Books.Delete(id)
+		if err != nil {
+			if errors.Is(err, models.ErrNoRecord) {
+				app.NotFound(w)
+				return
+			}
+			app.ServerError(w, err)
+			return
+		}
+		fmt.Fprintf(w, "Deleted book isbn: %d\n", id)
+	}
 }
 
 // Update book
