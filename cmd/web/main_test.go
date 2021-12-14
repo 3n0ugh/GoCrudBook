@@ -77,6 +77,12 @@ func TestGetBookByID(t *testing.T) {
 		wantBody *models.Book
 	}{
 		{"Valid ID", "/book/id?id=1932394160", http.StatusOK, bookmodel},
+		{"Non-existent ID", "/book/id?id=2", http.StatusNotFound, nil},
+		{"Negative ID", "/book/id?id=-1", http.StatusBadRequest, nil},
+		{"Decimal ID", "/book/id?id=1.23", http.StatusBadRequest, nil},
+		{"String ID", "/book/id?id=foo", http.StatusBadRequest, nil},
+		{"Empty ID", "/book/id?id=", http.StatusBadRequest, nil},
+		{"Trailing slash", "/book/id?id=/", http.StatusBadRequest, nil},
 	}
 
 	app := newTestApplication(t)
@@ -91,7 +97,11 @@ func TestGetBookByID(t *testing.T) {
 				t.Errorf("want %d; got %d", tt.wantCode, code)
 			}
 
-			if fmt.Sprintf("%v", string(body)) != fmt.Sprintf("%v", tt.wantBody) {
+			if tt.name != "Valid ID" && fmt.Sprintf("%s", string(body)) != http.StatusText(tt.wantCode)+"\n" {
+				t.Errorf("want body to contain %q, %q", http.StatusText(tt.wantCode)+"\n", string(body))
+			}
+
+			if tt.name == "Valid ID" && fmt.Sprintf("%v", string(body)) != fmt.Sprintf("%v", tt.wantBody) {
 				t.Errorf("want body to contain %v but got %v", tt.wantBody, string(body))
 			}
 		})
