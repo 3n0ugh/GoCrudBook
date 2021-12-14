@@ -62,7 +62,7 @@ func BookGetById(app *config.Application) http.HandlerFunc {
 			return
 		}
 
-		fmt.Fprintf(w, "%v\n", book)
+		fmt.Fprintf(w, "%v", book)
 	}
 }
 
@@ -107,7 +107,10 @@ func BookAdd(app *config.Application) http.HandlerFunc {
 		}
 
 		var book models.Book
-		json.Unmarshal(b, &book)
+		err = json.Unmarshal(b, &book)
+		if err != nil {
+			app.ServerError(w, err)
+		}
 
 		err = app.Books.Add(&book)
 		if err != nil {
@@ -163,7 +166,10 @@ func BookUpdate(app *config.Application) http.HandlerFunc {
 		}
 
 		var book models.Book
-		json.Unmarshal(b, &book)
+		err = json.Unmarshal(b, &book)
+		if err != nil {
+			app.ServerError(w, err)
+		}
 
 		err = app.Books.Update(&book)
 		if err != nil {
@@ -177,10 +183,10 @@ func BookUpdate(app *config.Application) http.HandlerFunc {
 
 // Borrow book
 func BookBorrow(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello, world!"))
+	fmt.Fprintln(w, "Hello, world!")
 }
 
 // Receive book
 func BookReceive(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello, world!"))
+	fmt.Fprintln(w, "Hello, world!")
 }
