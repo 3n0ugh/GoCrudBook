@@ -1,16 +1,20 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"reflect"
 	"testing"
 
 	"github.com/3n0ugh/GoCrudBook/cmd/web/config"
 	"github.com/3n0ugh/GoCrudBook/cmd/web/router"
 	"github.com/3n0ugh/GoCrudBook/pkg/models"
+	"github.com/3n0ugh/GoCrudBook/pkg/models/mysql"
 )
 
 func newTestApplication(t *testing.T) *config.Application {
@@ -42,6 +46,35 @@ func (ts *testServer) get(t *testing.T, urlPath string) (int, http.Header, []byt
 	}
 
 	return rs.StatusCode, rs.Header, body
+}
+
+func NewTestDB(t *testing.T) (*sql.DB, func()) {
+	db, err := sql.Open("mysql", "root@/test_library?multiStatements=true")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	script, err := os.ReadFile("../../pkg/models/mysql/testdata/setup.sql")
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = db.Exec(string(script))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return db, func() {
+		script, err := os.ReadFile("../../pkg/models/mysql/testdata/teardown.sql")
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = db.Exec(string(script))
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		db.Close()
+	}
 }
 
 func TestHome(t *testing.T) {
@@ -99,12 +132,63 @@ func TestGetBookByID(t *testing.T) {
 
 			if tt.name != "Valid ID" && fmt.Sprintf("%s", string(body)) != http.StatusText(tt.wantCode)+"\n" {
 				t.Errorf("want body to contain %q, %q", http.StatusText(tt.wantCode)+"\n", string(body))
-			}
-
-			if tt.name == "Valid ID" && fmt.Sprintf("%v", string(body)) != fmt.Sprintf("%v", tt.wantBody) {
+			} else if tt.name == "Valid ID" && fmt.Sprintf("%v", string(body)) != fmt.Sprintf("%v", tt.wantBody) {
 				t.Errorf("want body to contain %v but got %v", tt.wantBody, string(body))
 			}
 		})
 	}
 
+}
+
+func TestGetBokkAll(t *testing.T) {
+
+	bookmodels := []models.Book{
+		{
+			ISBN:        1933988673,
+			BookName:    "Unlocking Android: A Developer Guide",
+			Author:      "Charlie Collins",
+			PageCount:   416,
+			BookCount:   1,
+			BorrowTimes: 0,
+		},
+		{
+			ISBN:        1933988746,
+			BookName:    "Flex 3 in Action",
+			Author:      "Tariq Ahmed with Jon Hirschi",
+			PageCount:   576,
+			BookCount:   1,
+			BorrowTimes: 0,
+		},
+	}
+
+	test := struct {
+		name     string
+		urlPath  string
+		wantCode int
+		wantBody []models.Book
+	}{"GetBookAll", "/book", http.StatusOK, bookmodels}
+
+	app := newTestApplication(t)
+	ts := newTestServer(t, router.SetRoutes(app))
+	defer ts.Close()
+
+	t.Run(test.name, func(t *testing.T) {
+		db, teardown := NewTestDB(t)
+		defer teardown()
+
+		m := mysql.BookModel{
+			DB: db,
+		}
+
+		books, _ := m.GetAll()
+
+		var booklist []models.Book
+		for _, book := range books {
+			booklist = append(booklist, *book)
+		}
+
+		if !reflect.DeepEqual(booklist, test.wantBody) {
+			t.Errorf("want \n%v; got \n%v", test.wantBody, booklist)
+		}
+	})
 }
